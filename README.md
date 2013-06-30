@@ -20,17 +20,23 @@ This plugin provides analyzer `AnnotationAnalyzer` as well as filter
 Example
 -------
 Let's say we have this documents
-    ```"Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria"
-    "Beethoven[artist] died in Vienna[city]"```
+    ```
+    "Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria"
+    "Beethoven[artist] died in Vienna[city]"
+    ```
 
 could result is this token streams (depends on tokenizers and other filters used)
-```                                           | <[austria]>
+```
+                                           | <[austria]>
  <[artist]> |       | <[lifeEvent]> |      |  <[city]>
- <mozart>   | <was> |     <born>    | <in> | <salzburg>```
+ <mozart>   | <was> |     <born>    | <in> | <salzburg>
+ ```
 
 
- ```<[artist]>  |               | <[city]>
- <beethoven> | <died> | <in> | <vienna>```
+ ```
+ <[artist]>  |               | <[city]>
+ <beethoven> | <died> | <in> | <vienna>
+ ```
 
 
 
@@ -46,7 +52,8 @@ To use those custom analyzers/filters you need to modify `elasticsearch.yml`
 configuration file - see http://www.elasticsearch.org/guide/reference/index-modules/analysis/
 
 example configuration:
-```index :
+```
+index :
     analysis :
         analyzer :                
             annotation :
@@ -55,7 +62,8 @@ example configuration:
             annotation_filter :
                 type : custom
                 tokenizer : whitespace
-                filter : [lowercase,annotation_filter]```
+                filter : [lowercase,annotation_filter]
+```
 
 To test the analyzer you can query the following
     http://localhost:9200/test/_analyze?analyzer=annotation&text="Mozart[city;Salzburg]"
@@ -74,7 +82,8 @@ List of supported options
  + `delimiter` - delimiter for multiple inline annotations
 
 Example providing default values
-```index :
+```
+index :
     analysis :
         analyzer :                
             annotation :
@@ -84,4 +93,5 @@ Example providing default values
                 prefix : [
                 suffix : ]
                 token-type: synonym
-                delimiter : ;```
+                delimiter : ;
+```
