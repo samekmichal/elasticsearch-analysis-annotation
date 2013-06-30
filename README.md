@@ -21,7 +21,8 @@ Example
 -------
 Let's say we have this documents
     ```
-    "Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria"
+    "Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria]"
+    
     "Beethoven[artist] died in Vienna[city]"
     ```
 
