@@ -20,24 +20,26 @@ This plugin provides analyzer `AnnotationAnalyzer` as well as filter
 Example
 -------
 Let's say we have this documents
-    ```
-    "Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria]"
-    
-    "Beethoven[artist] died in Vienna[city]"
-    ```
+```
+"Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria]"
+```
+
+```
+"Beethoven[artist] died in Vienna[city]"
+```
 
 could result is this token streams (depends on tokenizers and other filters used)
 ```
-                                           | <[austria]>
- <[artist]> |       | <[lifeEvent]> |      |  <[city]>
- <mozart>   | <was> |     <born>    | <in> | <salzburg>
- ```
+                                          | <[austria]>
+<[artist]> |       | <[lifeEvent]> |      |  <[city]>
+<mozart>   | <was> |     <born>    | <in> | <salzburg>
+```
 
 
- ```
- <[artist]>  |               | <[city]>
- <beethoven> | <died> | <in> | <vienna>
- ```
+```
+<[artist]>  |               | <[city]>
+<beethoven> | <died> | <in> | <vienna>
+```
 
 
 
