@@ -28,6 +28,13 @@ import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.util.Version;
 
+/**
+ * Analyzer for inline annotations composed of WhitespaceTokenizer, LowerCaseFilter,
+ * and InlineAnnotationFilter (default settings).
+ * 
+ * @author Michal Samek, samek.michal @ gmail.com
+ *
+ */
 public class AnnotationAnalyzer extends Analyzer {
 
 	private final Version version;

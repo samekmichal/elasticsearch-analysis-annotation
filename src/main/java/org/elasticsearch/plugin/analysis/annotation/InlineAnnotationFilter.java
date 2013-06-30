@@ -55,8 +55,8 @@ public class InlineAnnotationFilter extends TokenFilter {
 	public static char SYNONYM_START_DELIMITER = '[';
 	public static char SYNONYM_END_DELIMITER = ']';
 	public static char SYNONYMS_DELIMITER = ';';
-	public static String SYNONYM_PREFIX = "<# ";
-	public static String SYNONYM_SUFFIX = " #>";
+	public static String SYNONYM_PREFIX = "[";
+	public static String SYNONYM_SUFFIX = "]";
 	
 	private Stack<String> synonymStack;
 	private AttributeSource.State current;
