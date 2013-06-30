@@ -28,6 +28,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeSource;
+import org.elasticsearch.ElasticSearchIllegalArgumentException;
+import org.elasticsearch.common.settings.Settings;
 
 /**
  * Characters surrounded by '[' SYNONYM_START_DELIMITER and ']' are considered
@@ -50,7 +52,7 @@ import org.apache.lucene.util.AttributeSource;
  */
 
 public class InlineAnnotationFilter extends TokenFilter {
-	public static final String SYNONYM_TOKEN_TYPE = "SYNONYM";
+	public static String SYNONYM_TOKEN_TYPE = "synonym";
 	
 	public static char SYNONYM_START_DELIMITER = '[';
 	public static char SYNONYM_END_DELIMITER = ']';
@@ -141,5 +143,68 @@ public class InlineAnnotationFilter extends TokenFilter {
 			synonymStack.push(synonyms.substring(beginIndex).trim());
 		}
 		return true;
+	}
+	
+	
+	/**
+	 * Process settings passed by ElasticSearch during initialization.
+	 * Recognised settings are:
+	 *   start - start delimiter for inline annotation
+	 *   end - end delimiter for inline annotation
+	 *   prefix - string to be prepended to synonym, that is created from inline annotation
+	 *   suffix - string to be apended to synonym, that is created from inline annotation
+	 *   token-type - token type of synonym
+	 *   delimiter - delimiter for multiple inline annotations
+	 * @param settings
+	 * @param name - logical name of the analyzer
+	 */
+	public static void settings(Settings settings, String name) {
+		String start_delim, end_delim, syn_prefix, syn_suffix, delimiter, token_type;
+        start_delim = settings.get("start");
+        end_delim = settings.get("end");
+        syn_prefix = settings.get("prefix");
+        syn_suffix = settings.get("suffix");
+        delimiter = settings.get("delimiter");
+        token_type = settings.get("token-type");
+        
+        
+        if (start_delim != null) {
+        	if (start_delim.length() != 1) {
+        		throw new ElasticSearchIllegalArgumentException(
+        				"Analyzer " + name + " has invalid settings: start " +
+        						"delimiter is limited to be single character");
+        	}
+        	InlineAnnotationFilter.SYNONYM_START_DELIMITER = start_delim.charAt(0);
+        }
+        
+        if (end_delim != null) {
+        	if (end_delim.length() != 1) {
+        		throw new ElasticSearchIllegalArgumentException(
+        				"Analyzer " + name + " has invalid settings: end " +
+        						"delimiter is limited to be single character");
+        	}
+        	InlineAnnotationFilter.SYNONYM_END_DELIMITER = end_delim.charAt(0);
+        }
+        
+        if (syn_prefix != null) {
+        	InlineAnnotationFilter.SYNONYM_PREFIX = syn_prefix;
+        }
+        
+        if (syn_suffix != null) {
+        	InlineAnnotationFilter.SYNONYM_SUFFIX = syn_suffix;
+        }
+        
+        if (delimiter != null) {
+        	if (delimiter.length() != 1) {
+        		throw new ElasticSearchIllegalArgumentException(
+        				"Analyzer " + name + " has invalid settings: " +
+        						"delimiter is limited to be single character");
+        	}
+        	InlineAnnotationFilter.SYNONYMS_DELIMITER = delimiter.charAt(0);
+        }
+        
+        if (token_type != null) {
+        	InlineAnnotationFilter.SYNONYM_TOKEN_TYPE = token_type;
+        }
 	}
 }

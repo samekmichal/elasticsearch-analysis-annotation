@@ -34,6 +34,8 @@ public class InlineAnnotationFilterFactory extends AbstractTokenFilterFactory {
 
     @Inject public InlineAnnotationFilterFactory(Index index, @IndexSettings Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
+        
+        InlineAnnotationFilter.settings(settings, name);
     }
 
     @Override public TokenStream create(TokenStream tokenStream) {

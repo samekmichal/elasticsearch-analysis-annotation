@@ -19,7 +19,9 @@
 
 package org.elasticsearch.index.analysis.annotation;
 
+import org.elasticsearch.ElasticSearchIllegalArgumentException;
 import org.elasticsearch.plugin.analysis.annotation.AnnotationAnalyzer;
+import org.elasticsearch.plugin.analysis.annotation.InlineAnnotationFilter;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -33,11 +35,16 @@ import org.elasticsearch.index.settings.IndexSettings;
 public class AnnotationAnalyzerProvider extends AbstractIndexAnalyzerProvider<AnnotationAnalyzer> {
 
     private final AnnotationAnalyzer analyzer;
+    private final String name;
 
     @Inject
     public AnnotationAnalyzerProvider(Index index, @IndexSettings Settings indexSettings, Environment env, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
+        
+        this.name = name;
 
+        InlineAnnotationFilter.settings(settings, name);
+        
         analyzer = new AnnotationAnalyzer(version);
     }
 
