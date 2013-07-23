@@ -20,6 +20,7 @@
 package org.elasticsearch.plugin.analysis.annotation;
 
 import com.google.common.collect.ImmutableList;
+//import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.index.analysis.annotation.AnnotationAnalysisBinderProcessor;
