@@ -52,7 +52,7 @@ import org.elasticsearch.common.settings.Settings;
  */
 
 public class InlineAnnotationFilter extends TokenFilter {
-	public static String SYNONYM_TOKEN_TYPE = "synonym";
+	public static String SYNONYM_TOKEN_TYPE = "<SYNONYM>";
 	
 	public static String SYNONYM_START_DELIMITER = "[";
 	public static String SYNONYM_END_DELIMITER = "]";
@@ -134,7 +134,7 @@ public class InlineAnnotationFilter extends TokenFilter {
 		int endIndex = -1;
 		while ((endIndex = synonyms.indexOf(SYNONYMS_DELIMITER, beginIndex)) != -1) {
 			synonymStack.push(synonyms.substring(beginIndex, endIndex).trim());
-			beginIndex = endIndex+1;
+			beginIndex = endIndex+SYNONYMS_DELIMITER.length();
 		}
 		
 		// Single synonym, which is not ended by SYNONYMS_DELIMITER, eq [artist]
