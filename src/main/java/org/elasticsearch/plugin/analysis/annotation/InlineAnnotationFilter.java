@@ -54,9 +54,9 @@ import org.elasticsearch.common.settings.Settings;
 public class InlineAnnotationFilter extends TokenFilter {
 	public static String SYNONYM_TOKEN_TYPE = "synonym";
 	
-	public static char SYNONYM_START_DELIMITER = '[';
-	public static char SYNONYM_END_DELIMITER = ']';
-	public static char SYNONYMS_DELIMITER = ';';
+	public static String SYNONYM_START_DELIMITER = "[";
+	public static String SYNONYM_END_DELIMITER = "]";
+	public static String SYNONYMS_DELIMITER = ";";
 	public static String SYNONYM_PREFIX = "[";
 	public static String SYNONYM_SUFFIX = "]";
 	
@@ -110,12 +110,13 @@ public class InlineAnnotationFilter extends TokenFilter {
 		
 		searchingLoop:
 		for (int i = 0; i < length; i++) {
-			if (buffer.charAt(i) == SYNONYM_START_DELIMITER) {
+			if (buffer.startsWith(SYNONYM_START_DELIMITER,i)) {
 				
 				// It might not be necessary to search for closing delimiter
-				for (int j = i + 1; j < length; j++) {
-					if (buffer.charAt(j) == SYNONYM_END_DELIMITER) {
-						synonyms = buffer.substring(i+1, j);
+				int synonyms_start = i + SYNONYM_START_DELIMITER.length();
+				for (int j = synonyms_start; j < length; j++) {
+					if (buffer.startsWith(SYNONYM_END_DELIMITER,j)) {
+						synonyms = buffer.substring(synonyms_start, j);
 						termAtt.setLength(i);
 						break searchingLoop;
 					}
@@ -169,21 +170,21 @@ public class InlineAnnotationFilter extends TokenFilter {
         
         
         if (start_delim != null) {
-        	if (start_delim.length() != 1) {
+        	if (start_delim.length() == 0) {
         		throw new ElasticSearchIllegalArgumentException(
         				"Analyzer " + name + " has invalid settings: start " +
-        						"delimiter is limited to be single character");
+        						"delimiter cannot be empty string");
         	}
-        	InlineAnnotationFilter.SYNONYM_START_DELIMITER = start_delim.charAt(0);
+        	InlineAnnotationFilter.SYNONYM_START_DELIMITER = start_delim;
         }
         
         if (end_delim != null) {
-        	if (end_delim.length() != 1) {
+        	if (end_delim.length() == 0) {
         		throw new ElasticSearchIllegalArgumentException(
         				"Analyzer " + name + " has invalid settings: end " +
-        						"delimiter is limited to be single character");
+        						"delimiter cannot be empty string");
         	}
-        	InlineAnnotationFilter.SYNONYM_END_DELIMITER = end_delim.charAt(0);
+        	InlineAnnotationFilter.SYNONYM_END_DELIMITER = end_delim;
         }
         
         if (syn_prefix != null) {
@@ -195,12 +196,12 @@ public class InlineAnnotationFilter extends TokenFilter {
         }
         
         if (delimiter != null) {
-        	if (delimiter.length() != 1) {
+        	if (delimiter.length() == 0) {
         		throw new ElasticSearchIllegalArgumentException(
         				"Analyzer " + name + " has invalid settings: " +
-        						"delimiter is limited to be single character");
+        						"delimiter cannot be empty string");
         	}
-        	InlineAnnotationFilter.SYNONYMS_DELIMITER = delimiter.charAt(0);
+        	InlineAnnotationFilter.SYNONYMS_DELIMITER = delimiter;
         }
         
         if (token_type != null) {
