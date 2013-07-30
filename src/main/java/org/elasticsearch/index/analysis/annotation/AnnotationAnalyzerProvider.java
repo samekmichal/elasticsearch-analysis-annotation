@@ -19,9 +19,6 @@
 
 package org.elasticsearch.index.analysis.annotation;
 
-import org.elasticsearch.ElasticSearchIllegalArgumentException;
-import org.elasticsearch.plugin.analysis.annotation.AnnotationAnalyzer;
-import org.elasticsearch.plugin.analysis.annotation.InlineAnnotationFilter;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.inject.assistedinject.Assisted;
 import org.elasticsearch.common.settings.Settings;
@@ -29,6 +26,8 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.analysis.AbstractIndexAnalyzerProvider;
 import org.elasticsearch.index.settings.IndexSettings;
+import org.elasticsearch.plugin.analysis.annotation.AnnotationAnalyzer;
+import org.elasticsearch.plugin.analysis.annotation.InlineAnnotationFilter;
 
 /**
  */
