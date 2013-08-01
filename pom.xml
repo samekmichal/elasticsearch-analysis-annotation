@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-analysis-annotation</artifactId>
-    <version>1.0-BETA</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <inceptionYear>2013</inceptionYear>
     <licenses>

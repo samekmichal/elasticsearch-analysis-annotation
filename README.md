@@ -15,6 +15,8 @@ This plugin provides analyzer `AnnotationAnalyzer` as well as filter
 `InlineAnnotationFilter`.
 `AnnotationAnalyzer` is composed of `WhitespaceTokenizer`, `LowerCaseFilter` and
 `InlineAnnotationFilter` (with default settings).
+More sophisticated analyzers (equivalent to StandardAnalyzer or SnowballAnalyzer)
+can be configure via configuration file elasticsearch.yml or web API. 
 
 
 Example
@@ -24,29 +26,24 @@ Let's say we have this documents
 "Mozart[artist] was born[lifeEvent] in Salzburg[city;Austria]"
 ```
 
+If we parse this with StandardAnalyzer equivalent with annotation analysis added to it
+we get these tokens - some are omitted due to used StopFilter.
 ```
-"Beethoven[artist] died in Vienna[city]"
-```
-
-could result is this token streams (depends on tokenizers and other filters used)
-```
-                                          | <[austria]>
-<[artist]> |       | <[lifeEvent]> |      |  <[city]>
-<mozart>   | <was> |     <born>    | <in> | <salzburg>
+                           | [austria]
+[artist] | | [lifeevent] | |  [city]
+ mozart  | |    born     | | salzburg
 ```
 
-
+If we  use StandardAnalyzer the result would be
 ```
-<[artist]>  |               | <[city]>
-<beethoven> | <died> | <in> | <vienna>
+mozart | artist | | born | lifeevent | | salzburg | city | austria
 ```
-
 
 
 Installation
 ------------
 This plugin follows conventions for elasticsearch plugins, thus can be installed
-in standard manner - see http://www.elasticsearch.org/guide/reference/modules/plugins/
+in a standard manner - see http://www.elasticsearch.org/guide/reference/modules/plugins/
 
 
 Using this plugin
@@ -54,18 +51,40 @@ Using this plugin
 To use those custom analyzers/filters you need to modify `elasticsearch.yml` 
 configuration file - see http://www.elasticsearch.org/guide/reference/index-modules/analysis/
 
-example configuration:
+The following example configuration contains definitions for analyzers based on behaviour of
+StandardAnalyzer and SnowballAnalyzer.
+
+Please note that standard_annotation and snowball_annotation analyzers use standard tokenizer,
+which removes all non-alphanumeric characters and thus makes it impossible to process inline
+annotations marked with [,],; (which are used in default behaviour of InlineAnnotationFilter).
+
+For this purpose we need to use mapping char filter, which remaps those special characters to
+their equivalent, which will be accepted by standard tokenizer as part of the token.
+
 ```
-index :
-    analysis :
-        analyzer :                
-            annotation :
-                type : annotation
-                
-            annotation_filter :
-                type : custom
-                tokenizer : whitespace
-                filter : [lowercase,annotation_filter]
+ index :
+     analysis :
+         char_filter : 
+             annotation_remap : 
+                 type : mapping
+                 mappings : ["[=>__annotation_start__", "]=>__annotation_end__",";=>__annotation_delimiter__"] #substituované řetězce
+         analyzer :                
+             standard_annotation :
+                 type : custom
+                 tokenizer : standard
+                 char_filter : annotation_remap
+                 filter : [standard, lowercase, annotation_filter, stop] #sada filtrů používaná StandardAnalyzerem
+             snowball_annotation :
+                 type : custom
+                 tokenizer : standard
+                 char_filter : annotation_remap
+                 filter : [standard, lowercase, annotation_filter, stop, snowball] #sada filtrů používaná SnowballAnalyzerem
+         filter :
+             annotation_filter :
+                 type : annotation_filter
+                 start : __annotation_start__
+                 end : __annotation_end__
+                 delimiter : __annotation_delimiter__
 ```
 
 To test the analyzer you can query the following
@@ -74,7 +93,7 @@ To test the analyzer you can query the following
 
 Customization
 -------------
-Both AnnotationAnalyzer and InlineAnnotationFilter can be slightly customized.
+The InlineAnnotationFilter can be slightly customized.
 
 List of supported options
  + `start` - start delimiter for inline annotation
@@ -98,3 +117,8 @@ index :
                 token-type: synonym
                 delimiter : ;
 ```
+
+
+Elasticsearch version
+---------------------
+This plugin was successfuly tested on elasticsearch version 0.90.2
