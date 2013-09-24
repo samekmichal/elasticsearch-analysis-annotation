@@ -78,11 +78,7 @@ public class InlineAnnotationFilter extends TokenFilter {
 	@Override
 	public boolean incrementToken() throws IOException {
 		if (synonymStack.size() > 0) {
-			String syn = SYNONYM_PREFIX + synonymStack.pop() + SYNONYM_SUFFIX;
-			restoreState(current);
-			termAtt.copyBuffer(syn.toCharArray(), 0, syn.length());
-			typeAtt.setType(SYNONYM_TOKEN_TYPE);
-			posIncrAtt.setPositionIncrement(0);
+			popAliasFromStack();
 			return true;
 		}
 
@@ -91,9 +87,23 @@ public class InlineAnnotationFilter extends TokenFilter {
 		}
 		
 		if (addAliasesToStack()) {
-			current = captureState();
+			if (termAtt.length()  == 0)
+			{
+				popAliasFromStack();
+			}
 		}
+
+		current = captureState();
 		return true;
+	}
+
+	private void popAliasFromStack() 
+	{
+		String syn = SYNONYM_PREFIX + synonymStack.pop() + SYNONYM_SUFFIX;
+		restoreState(current);
+		termAtt.copyBuffer(syn.toCharArray(), 0, syn.length());
+		typeAtt.setType(SYNONYM_TOKEN_TYPE);
+		posIncrAtt.setPositionIncrement(0);
 	}
 
 	
