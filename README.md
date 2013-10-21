@@ -48,15 +48,16 @@ in a standard manner - see http://www.elasticsearch.org/guide/reference/modules/
 
 Using this plugin
 -----------------
-To use those custom analyzers/filters you need to modify `elasticsearch.yml` 
-configuration file - see http://www.elasticsearch.org/guide/reference/index-modules/analysis/
+To use those custom analyzers/filters you need to either modify `elasticsearch.yml` 
+configuration file - see http://www.elasticsearch.org/guide/reference/index-modules/analysis/ or specify
+index mapping via elasticsearch API.
 
 The following example configuration contains definitions for analyzers based on behaviour of
 StandardAnalyzer and SnowballAnalyzer.
 
-Please note that standard_annotation and snowball_annotation analyzers use standard tokenizer,
+*Please note that standard_annotation and snowball_annotation analyzers use standard tokenizer,
 which removes all non-alphanumeric characters and thus makes it impossible to process inline
-annotations marked with [,],; (which are used in default behaviour of InlineAnnotationFilter).
+annotations marked with [,],; (which are used in default behaviour of InlineAnnotationFilter).*
 
 For this purpose we need to use mapping char filter, which remaps those special characters to
 their equivalent, which will be accepted by standard tokenizer as part of the token.
@@ -67,18 +68,18 @@ their equivalent, which will be accepted by standard tokenizer as part of the to
          char_filter : 
              annotation_remap : 
                  type : mapping
-                 mappings : ["[=>__annotation_start__", "]=>__annotation_end__",";=>__annotation_delimiter__"] #substituované řetězce
+                 mappings : ["[=>__annotation_start__", "]=>__annotation_end__",";=>__annotation_delimiter__"]
          analyzer :                
              standard_annotation :
                  type : custom
                  tokenizer : standard
                  char_filter : annotation_remap
-                 filter : [standard, lowercase, annotation_filter, stop] #sada filtrů používaná StandardAnalyzerem
+                 filter : [standard, lowercase, annotation_filter, stop]
              snowball_annotation :
                  type : custom
                  tokenizer : standard
                  char_filter : annotation_remap
-                 filter : [standard, lowercase, annotation_filter, stop, snowball] #sada filtrů používaná SnowballAnalyzerem
+                 filter : [standard, lowercase, annotation_filter, stop, snowball]
          filter :
              annotation_filter :
                  type : annotation_filter
@@ -90,6 +91,10 @@ their equivalent, which will be accepted by standard tokenizer as part of the to
 To test the analyzer you can query the following
     http://localhost:9200/test/_analyze?analyzer=annotation&text="Mozart[city;Salzburg]"
 
+Limitation
+----------
+Another thing to keep in mind is that you can't use word-delimiting characters inside annotations.
+The whole string would be treated as two tokens which would result in unexpected behaviour.
 
 Customization
 -------------
